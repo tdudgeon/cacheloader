@@ -98,3 +98,15 @@ dependencies {
     }
     testCompile 'junit:junit:4.11'
 }
+
+task runCacheLoader(dependsOn: 'classes', type: JavaExec) {
+    main = 'foo.CacheLoader'
+    maxHeapSize = "8000m"
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task runDBReader(dependsOn: 'classes', type: JavaExec) {
+    main = 'foo.DBReader'
+    maxHeapSize = "8000m"
+    classpath = sourceSets.main.runtimeClasspath
+}
