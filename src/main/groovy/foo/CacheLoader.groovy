@@ -5,27 +5,23 @@ import chemaxon.jchem.db.JChemSearch
 import chemaxon.util.ConnectionHandler
 import chemaxon.sss.search.JChemSearchOptions
 import chemaxon.util.ConnectionHandler
+import javax.sql.DataSource
 import org.postgresql.ds.PGSimpleDataSource
 
 /**
  *
  * @author timbo
  */
-class CacheLoader {
+class CacheLoader extends AbstractDataSource {
     
     public static void main(String[] args) {
-        PGSimpleDataSource ds = new PGSimpleDataSource()
-        ds.serverName = 'localhost'
-        ds.portNumber =  49153
-        ds.databaseName = 'chemcentral'
-        ds.user = 'chemcentral'
-        ds.password = 'chemcentral'
-
+        DataSource ds = createDataSource()
         def con = ds.connection
+        String propTable = System.getenv("JCHEM_PROPERTY_TABLE") ?: 'chemcentral.jchemproperties'
+        String strucTable = System.getenv("JCHEM_STRUCTURE_TABLE") ?: 'chemcentral.structures'
             
-        //ConnectionHandler conh = new ConnectionHandler(con, 'chembl_19.jchemproperties')
-        ConnectionHandler conh = new ConnectionHandler(con, 'chemcentral.jchemproperties')
-        //ConnectionHandler conh = new ConnectionHandler(con, 'vendordbs.jchemproperties')
+        ConnectionHandler conh = new ConnectionHandler(con, propTable)
+
         CacheRegistrationUtil cru = new CacheRegistrationUtil(conh)
         cru.registerCache()
         println "cache registered"
@@ -36,9 +32,7 @@ class CacheLoader {
                     
             JChemSearch searcher = new JChemSearch()
             searcher.connectionHandler = conh
-            //searcher.structureTable = 'chembl_19.jchem_structures'
-            searcher.structureTable = 'chemcentral.structures'
-            //searcher.structureTable = 'vendordbs.emolecules_ordersc'
+            searcher.structureTable = strucTable
             searcher.queryStructure = 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C'
  
             JChemSearchOptions searchOptions = new JChemSearchOptions(JChemSearch.FULL)

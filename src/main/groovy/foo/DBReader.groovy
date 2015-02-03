@@ -9,18 +9,13 @@ import org.postgresql.ds.PGSimpleDataSource
  *
  * @author timbo
  */
-class DBReader {
+class DBReader extends AbstractDataSource {
     
     public static void main(String[] args) {
-
-
-        PGSimpleDataSource ds = new PGSimpleDataSource()
-        ds.serverName = 'localhost'
-        ds.portNumber =  49153
-        ds.databaseName = 'chemcentral'
-        ds.user = 'chemcentral'
-        ds.password = 'chemcentral' 
         
+        String strucTable = System.getenv("JCHEM_STRUCTURE_TABLE") ?: 'chemcentral.structures'
+        
+        DataSource ds = createDataSource()
         
         Connection con = ds.connection
         con.setAutoCommit(false)
@@ -35,7 +30,7 @@ class DBReader {
         def rows = []
         long t0 = System.currentTimeMillis()
         db.withStatement{ stmt -> stmt.setFetchSize(10000) }
-        db.eachRow('SELECT ' + cols.join(',') + ' FROM chemcentral.structures') { row ->
+        db.eachRow('SELECT ' + cols.join(',') + ' FROM ' + strucTable) { row ->
             def r = []
             cols.each { c ->
                 r << row[c]

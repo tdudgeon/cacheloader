@@ -2,7 +2,8 @@
 // Apply the java plugin to add support for Java
 apply plugin: 'groovy'
 apply plugin: 'application'
-mainClassName = "foo.CacheLoader"
+//mainClassName = "foo.CacheLoader"
+mainClassName = "foo.DBReader"
 applicationDefaultJvmArgs = ["-Xmx8000m"]
 
 sourceCompatibility = 1.7
