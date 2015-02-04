@@ -45,7 +45,10 @@ class CacheLoader extends AbstractDataSource {
             println "search complete"
             println "autocommit is " + con.autoCommit
             con.commit()
-            println "finished in ${t1-t0}ms"
+            println "finished in ${t1-t0}ms\n"
+            
+            println buildCacheInfo() + "\n"
+            println buildMemoryInfo() + "\n"
 
         } finally {
             cru.unRegisterCache()

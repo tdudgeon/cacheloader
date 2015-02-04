@@ -101,12 +101,18 @@ dependencies {
 
 task runCacheLoader(dependsOn: 'classes', type: JavaExec) {
     main = 'foo.CacheLoader'
-    maxHeapSize = "8000m"
+    maxHeapSize = "12000m"
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task runDBReader(dependsOn: 'classes', type: JavaExec) {
     main = 'foo.DBReader'
-    maxHeapSize = "8000m"
-    classpath = sourceSets.main.runtimeClasspath
+    maxHeapSize = "12000m"
+    classpath = sourceSets.main.runtimeClasspath 
+}
+
+task runSmilesCompression(dependsOn: 'classes', type: JavaExec) {
+    main = 'foo.CompressionStat'
+    maxHeapSize = "12000m"
+    classpath = sourceSets.main.runtimeClasspath 
 }

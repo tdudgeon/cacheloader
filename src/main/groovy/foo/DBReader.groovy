@@ -4,6 +4,7 @@ import javax.sql.DataSource
 import java.sql.Connection
 import groovy.sql.Sql
 import org.postgresql.ds.PGSimpleDataSource
+import chemaxon.util.SmilesCompressor;
 
 /**
  *
@@ -12,8 +13,15 @@ import org.postgresql.ds.PGSimpleDataSource
 class DBReader extends AbstractDataSource {
     
     public static void main(String[] args) {
+       
         
         String strucTable = System.getenv("JCHEM_STRUCTURE_TABLE") ?: 'chemcentral.structures'
+        
+        SmilesCompressor smilesCompressor = new SmilesCompressor();
+        /* Some warmup ..*/
+        for (int i = 0; i < 100000; i++) {
+            byte[] compress = smilesCompressor.compress("CCCCNOC1CCCCCC1CCOOO(COOO)OCO");
+        }
         
         DataSource ds = createDataSource()
         
@@ -32,8 +40,20 @@ class DBReader extends AbstractDataSource {
         db.withStatement{ stmt -> stmt.setFetchSize(10000) }
         db.eachRow('SELECT ' + cols.join(',') + ' FROM ' + strucTable) { row ->
             def r = []
+            int i = 0
             cols.each { c ->
-                r << row[c]
+                i++
+                if (i == 2) {
+                    String smiles = row[c]
+                    if (smiles != null) {
+                        byte[] compressed = smilesCompressor.compress(smiles)
+                        r << compressed
+                    } else {
+                        r << null
+                    }
+                } else {
+                    r << row[c]
+                }
             }
             rows << r
             count++
@@ -42,7 +62,10 @@ class DBReader extends AbstractDataSource {
             }
         }
         long t1 = System.currentTimeMillis()
-        println "Finished in ${t1-t0}ms"
+        println "Finished in ${t1-t0}ms\n"
+        
+        println buildMemoryInfo() + "\n"
+        
 
     }
 	
